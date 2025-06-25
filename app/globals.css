@@ -26,6 +26,11 @@
   }
 }
 
+/* @layer components{
+  .btn{
+    @apply rounded-md text-sm font-semibold text-white shadow-sm;
+  }
+} */
 @layer utilities {
   /* ===== UTILITIES */
   .sidebar {

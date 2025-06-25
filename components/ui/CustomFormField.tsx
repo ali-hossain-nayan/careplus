@@ -23,9 +23,9 @@ import { Checkbox } from './checkbox';
 
 
 interface CustomProps {
-    control: Control<any>,
-    fieldType: FormFieldType,
-    name: string,
+    control: Control<any>,// react-hook-form control from parent form 
+    fieldType: FormFieldType,// input, textarea, phoneInput, checkbox, datePicker, select
+    name: string,// name of the field
     label?: string,
     placeholder?: string,
     iconSrc?: string,
@@ -33,14 +33,18 @@ interface CustomProps {
     disabled?: boolean,
     dateFormat?: string,
     showTimeSelect?: boolean,
-    children?: React.ReactNode,
-    renderSkeleton?: (field: any) => React.ReactNode,
+    children?: React.ReactNode,// for select options
+    renderSkeleton?: (field: any) => React.ReactNode,// for skeleton loading
 }
-const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
+const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {// render field based on fieldType
+    // destructure props
     const { fieldType, iconSrc, iconAlt, placeholder, showTimeSelect, dateFormat, renderSkeleton } = props;
+    // render field based on fieldType
     switch (fieldType) {
+        
         case FormFieldType.INPUT:
             return (
+                // render input field with icon
                 <div className='flex rounded-md border border-dark-500 bg-dark-400'>
                     {
                         iconSrc && (

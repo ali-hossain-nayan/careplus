@@ -15,7 +15,7 @@ import CustomFormField from "../ui/CustomFormField"
 import SubmitButton from "../ui/SubmitButton"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import {  registerPatient } from "@/lib/actions/patient.action"
+import { registerPatient } from "@/lib/actions/patient.action"
 import { FormFieldType } from "./PatientForm"
 import { Label } from "../ui/label"
 import { SelectItem } from "../ui/select"
@@ -37,6 +37,7 @@ const RegisterForm = ({ user }: { user: User }) => {
             email: "",
             phone: ""
         },
+
     })
 
     async function onSubmit(values: z.infer<typeof PatientFormValidation>) {
@@ -44,6 +45,8 @@ const RegisterForm = ({ user }: { user: User }) => {
 
         let formData;
         if (values.identificationDocument && values.identificationDocument.length > 0) {
+            // create a new FormData object
+            //blobFile is an object of type file that browser creates when we upload a file and browser can read it
             const blobFile = new Blob([values.identificationDocument[0]], {
                 type: values.identificationDocument[0].type,
             })
@@ -69,7 +72,7 @@ const RegisterForm = ({ user }: { user: User }) => {
 
         } catch (error) {
             console.log(error)
-        } 
+        }
         setIsloading(false);
     }
 

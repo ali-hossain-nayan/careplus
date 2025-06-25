@@ -58,6 +58,7 @@ const AppointmentForm = ({ userId, patientId, type, appointment, setOpen }:
     })
 
 
+
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof AppointmentFormValidation>) {
         console.log("I am submitting", { type })

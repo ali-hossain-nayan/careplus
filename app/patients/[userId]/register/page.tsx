@@ -6,7 +6,8 @@ import { getUser } from '@/lib/actions/patient.action'
 import RegisterForm from '@/components/forms/RegisterForm'
 
 
-const Register = async ({ params: { userId } }: SearchParamProps) => {
+const Register = async ({ params: { userId } }: SearchParamProps) => {// destructure the userId from params
+    //from dinamic route userId we get the userId
     const user = await getUser(userId);
 
     return (

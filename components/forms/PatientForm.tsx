@@ -67,8 +67,10 @@ const PatientForm = () => {
                     <h1 className="header">Hi,there...</h1>
                     <p className="text-dark-700">Schudle your first appointment</p>
                 </section>
+
                 <CustomFormField
                     fieldType={FormFieldType.INPUT}
+                    // passing the control prop to the CustomFormField component means that the component will be able to access the form's state and methods, such as validation and submission.
                     control={form.control}
                     name="name"
                     label="Full name"
