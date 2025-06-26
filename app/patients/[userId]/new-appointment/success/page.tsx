@@ -38,26 +38,31 @@ const Success = async ({ params: { userId }, searchParams }: SearchParamProps) =
 
                 <section className="request-details">
                     <p>Requested appointment details:</p>
-                    <div className="flex items-center gap-3">
-                        <Image
-                            src={doctor?.image!}
-                            width={100}
-                            height={100}
-                            className='size-6'
-                            alt='doctor'
-                        />
-                        <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
-                    </div>
+                    {doctor ? (
+                        <div className="flex items-center gap-3">
+                            <Image
+                                src={doctor.image}
+                                width={100}
+                                height={100}
+                                className="size-6"
+                                alt="doctor"
+                            />
+                            <p className="whitespace-nowrap">Dr. {doctor.name}</p>
+                        </div>
+                    ) : (
+                        <p className="text-red-500">Doctor not found</p>
+                    )}
                     <div className="flex gap-2">
                         <Image
                             src="/assets/icons/calendar.svg"
                             height={24}
                             width={24}
-                            alt='calendar'
+                            alt="calendar"
                         />
                         <p>{formatDateTime(appointment.schedule).dateTime}</p>
                     </div>
                 </section>
+
 
                 <Button variant="outline" className='shad-primary-btn' asChild>
                     <Link href={`/patients/${userId}/new-appointment`}>New Appointment
