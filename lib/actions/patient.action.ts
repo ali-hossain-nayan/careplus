@@ -1,57 +1,38 @@
-
 'use server'
-import { ID, Query } from "node-appwrite"
-import { BUCKET_ID, DATABASE_ID, databases, ENDPOINT, PATIENT_COLLECTION_ID, PROJECT_ID, storage, users } from "../appwrite.config"
-import { parseStringify } from "../utils"
-import { InputFile } from 'node-appwrite/file'
+import { ID, Query } from "node-appwrite";
+import { APPOINTMENT_COLLECTION_ID, DATABASE_ID, databases } from "../appwrite.config";
+import { parseStringify } from "../utils";
+import { Appointment } from "@/types/appwrite.types";
+import { revalidatePath } from "next/cache";
 
 
 
 
+export const createAppointment = async (appointment: CreateAppointmentParams) => {
 
-export const createUser = async (user: CreateUserParams) => {
     try {
-        const newUser = await users.create(
+        const newAppointment = await databases.createDocument(
+            DATABASE_ID!,
+            APPOINTMENT_COLLECTION_ID!,
             ID.unique(),
-            user.email,
-            user.phone,
-            undefined,
-            user.name
+            appointment
         )
-        console.log({ newUser })
-        return parseStringify(newUser);
-    } catch (error: any) {
-        if (error && error?.code === 409) {
-            const documents = await users.list([
-                Query.equal('email', [user.email])
-            ])
-            return documents?.users[0];
-        }
-    }
-}
-
-
-
-export const getUser = async (userId: string) => {
-    try {
-        const user = await users.get(userId);
-
-        return parseStringify(user);
+        return parseStringify(newAppointment);
     } catch (error) {
         console.log(error)
     }
+
 }
 
-
-export const getPatient = async (userId: string) => {
+//get appoint details
+export const getAppointment = async (appointmentId: string) => {
     try {
-        const patients = await databases.listDocuments(
+        const appointment = await databases.getDocument(
             DATABASE_ID!,
-            PATIENT_COLLECTION_ID!,
-            [Query.equal('userId', userId)]
-        );
-
-        return parseStringify(patients.documents[0]);
+            APPOINTMENT_COLLECTION_ID!,
+            appointmentId,
+        )
+        return parseStringify(appointment)
     } catch (error) {
         console.log(error)
     }
@@ -59,31 +40,64 @@ export const getPatient = async (userId: string) => {
 
 
 
-export const registerPatient = async ({ identificationDocument, ...patient }: RegisterUserParams) => {
-
-
+export const getRecentAppointmentList = async () => {
     try {
-        let file;
-        if (identificationDocument) {
-            const inputFile = InputFile.fromBuffer(
-                identificationDocument?.get('blobFile') as Blob,
-                identificationDocument?.get('fileName') as string,
-            )
-
-            file = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile)
-        }
-        const newPatient = await databases.createDocument(
+        const appointments = await databases.listDocuments(
             DATABASE_ID!,
-            PATIENT_COLLECTION_ID!,
-            ID.unique(),
-            {
-                identificationDocumentId: file?.$id || null,
-                identificationDocumentUrl: `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${file?.$id}/view?project=${PROJECT_ID}`,
-                ...patient
+            APPOINTMENT_COLLECTION_ID!,
+            [Query.orderDesc("$createdAt")]
+        )
+
+        const initialCounts = {
+            scheduledCount: 0,
+            pendingCount: 0,
+            cancelledCount: 0,
+        }
+
+        const counts = (appointments.documents as Appointment[]).reduce((acc, appointment) => {
+            if (appointment.status === 'scheduled') {
+                acc.scheduledCount += 1;
             }
-        )
-        return parseStringify(newPatient);
 
+            else if (appointment.status === 'pending') {
+                acc.pendingCount += 1;
+            }
+            else if (appointment.status === 'cancelled') {
+                acc.cancelledCount += 1;
+            }
+
+            return acc;
+        }, initialCounts)
+
+        const data = {
+            totalCount: appointments.total,
+            ...counts,
+            documents: appointments.documents
+        }
+        return parseStringify(data);
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+export const updateAppointment = async ({ appointmentId, userId, appointment, type }: UpdateAppointmentParams) => {
+
+    try {
+        const updatedAppointment = await databases.updateDocument(
+            DATABASE_ID!,
+            APPOINTMENT_COLLECTION_ID!,
+            appointmentId,
+            appointment
+        )
+
+        if (!updatedAppointment) {
+            throw new Error("Appointment not found!")
+        }
+        //sms notification
+        revalidatePath("/admin")
+        return parseStringify(updatedAppointment)
     } catch (error) {
         console.log(error)
     }
