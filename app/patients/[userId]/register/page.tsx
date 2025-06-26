@@ -1,7 +1,5 @@
 import Image from 'next/image'
 import React from 'react'
-// import register from '../../../../../src/public/assets/images/register-img.png'
-import Link from 'next/link'
 import { getUser } from '@/lib/actions/patient.action'
 import RegisterForm from '@/components/forms/RegisterForm'
 
