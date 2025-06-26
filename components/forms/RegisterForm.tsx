@@ -6,7 +6,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-// import userImg from "../../public/assets/icons/user.svg"
 import {
     Form,
     FormControl,
@@ -64,8 +63,9 @@ const RegisterForm = ({ user }: { user: User }) => {
                 birthDate: new Date(values.birthDate),
                 identificationDocument: formData
             }
-            //@ts-ignore
+            // @ts-expect-error: registerPatient expects identificationDocument in a different structure
             const patient = await registerPatient(patientData);
+
             if (patient) {
                 router.push(`/patients/${user.$id}/new-appointment`)
             }
