@@ -1,10 +1,8 @@
-
 'use client'
 import React, { useEffect, useState } from 'react'
 import {
     AlertDialog,
     AlertDialogAction,
-    AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
@@ -15,13 +13,11 @@ import {
 import {
     InputOTP,
     InputOTPGroup,
-    InputOTPSeparator,
     InputOTPSlot,
 } from "@/components/ui/input-otp"
 
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { set } from 'zod';
 import { decryptKey, encryptKey } from '@/lib/utils';
 
 const PassKeyModal = () => {
@@ -36,9 +32,7 @@ const PassKeyModal = () => {
         router.push('/')
     }
 
-    const encryptedKey = typeof window !== 'undefined' ? window.localStorage.
-        getItem('accessKey') : null;
-
+    const encryptedKey = typeof window !== 'undefined' ? window.localStorage.getItem('accessKey') : null;
 
     useEffect(() => {
         const accessKey = encryptedKey && decryptKey(encryptedKey);
@@ -46,14 +40,11 @@ const PassKeyModal = () => {
             if (accessKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
                 setOpen(false);
                 router.push('/admin');
-
             } else {
                 setOpen(true);
             }
         }
-
-    }, [encryptedKey])
-
+    }, [encryptedKey, path, router]) // Added missing dependencies
 
     const validatePassKey = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
@@ -62,7 +53,7 @@ const PassKeyModal = () => {
             const encryptedKey = encryptKey(passkey);
             localStorage.setItem('accessKey', encryptedKey);
             setOpen(false)
-
+            router.push('/admin'); // Added navigation after successful validation
         } else {
             setError("Invalid passkey!!")
         }
@@ -119,7 +110,6 @@ const PassKeyModal = () => {
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-
     )
 }
 
