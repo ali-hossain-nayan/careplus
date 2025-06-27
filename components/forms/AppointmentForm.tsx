@@ -103,8 +103,9 @@ const AppointmentForm = ({
             status,
             cancellationReason: values.cancellationReason,
           },
-          type,
+          type: type === "schedule" ? "reschedule" : "statusChange", // ✅ Mapped correctly
         };
+
 
         const updatedAppointment = await updateAppointment(appointmentToUpdate);
         if (updatedAppointment) {
