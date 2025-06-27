@@ -34,20 +34,21 @@ export const createAppointment = async (appointment: CreateAppointmentParams) =>
       ? appointment.patient 
       : appointment.patient.$id;
 
-    const newAppointment = await databases.createDocument(
-      DATABASE_ID,
-      APPOINTMENT_COLLECTION_ID,
-      ID.unique(),
-      {
-        patientId,
-        schedule: appointment.schedule.toISOString(),
-        status: appointment.status,
-        primaryPhysician: appointment.primaryPhysician,
-        reason: appointment.reason,
-        note: appointment.note,
-        userId: appointment.userId
-      }
-    );
+   const newAppointment = await databases.createDocument(
+  DATABASE_ID,
+  APPOINTMENT_COLLECTION_ID,
+  ID.unique(),
+  {
+    patient: patientId, // <-- Correct field name here
+    schedule: appointment.schedule.toISOString(),
+    status: appointment.status,
+    primaryPhysician: appointment.primaryPhysician,
+    reason: appointment.reason,
+    note: appointment.note,
+    userId: appointment.userId
+  }
+);
+
     return parseStringify(newAppointment);
   } catch (error) {
     console.error("Failed to create appointment:", error);
