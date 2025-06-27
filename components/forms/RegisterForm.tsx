@@ -135,7 +135,7 @@ const RegisterForm = ({ user }: { user: User }) => {
                                 <RadioGroup
                                     className="flex h-11 gap-6 xl:justify-between"
                                     onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    defaultValue={typeof field.value === 'string' ? field.value : undefined}
                                 >
                                     {GenderOptions.map((option, i) => (
                                         <div key={option + i} className="radio-group">
@@ -149,6 +149,7 @@ const RegisterForm = ({ user }: { user: User }) => {
                             </FormControl>
                         )}
                     />
+
                 </div>
 
                 <div className="flex flex-col gap-6 xl:flex-row">
