@@ -280,7 +280,7 @@ const RegisterForm = ({ user }: { user: User }) => {
                 <CustomFormField
                     fieldType={FormFieldType.SELECT}
                     control={form.control}
-                    name="identification"
+                    name="identificationType" // ✅ corrected
                     label="Identification type"
                     placeholder="Select an identification type"
                 >
@@ -290,6 +290,7 @@ const RegisterForm = ({ user }: { user: User }) => {
                         </SelectItem>
                     ))}
                 </CustomFormField>
+
 
                 <CustomFormField
                     fieldType={FormFieldType.INPUT}
@@ -306,7 +307,9 @@ const RegisterForm = ({ user }: { user: User }) => {
                     label="Scanned copy of identification document"
                     renderSkeleton={(field) => (
                         <FormControl>
-                            <FileUploader files={field.value} onChange={field.onChange} />
+                           <FileUploader files={field.value as File[] | undefined} onChange={field.onChange} />
+
+
                         </FormControl>
                     )}
                 />
