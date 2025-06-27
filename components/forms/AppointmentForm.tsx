@@ -124,8 +124,8 @@ const AppointmentForm = ({
     type === "cancel"
       ? "Cancel Appointment"
       : type === "schedule"
-      ? "Schedule Appointment"
-      : "Create Appointment";
+        ? "Schedule Appointment"
+        : "Create Appointment";
 
   return (
     <Form {...form}>
@@ -202,9 +202,8 @@ const AppointmentForm = ({
 
         <SubmitButton
           isLoading={isLoading}
-          className={`${
-            type === "cancel" ? "shad-danger-btn" : "shad-primary-btn"
-          } w-full`}
+          className={`${type === "cancel" ? "shad-danger-btn" : "shad-primary-btn"
+            } w-full`}
         >
           {btnLabel}
         </SubmitButton>

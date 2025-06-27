@@ -1,6 +1,4 @@
 
-
-
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -344,4 +342,4 @@ const RegisterForm = ({ user }: { user: User }) => {
     )
 }
 
-export default RegisterForm  
+export default RegisterForm
