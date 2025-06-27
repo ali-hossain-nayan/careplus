@@ -1,3 +1,5 @@
+
+"use client';"
 import { Button } from '@/components/ui/button';
 import { Doctors } from '@/constants';
 import { getAppointment } from '@/lib/actions/appointment.actions';
