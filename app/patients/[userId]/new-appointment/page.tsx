@@ -4,7 +4,6 @@ import { getPatient } from '@/lib/actions/patient.action';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 
-// Define proper types
 type Patient = {
   $id: string;
   // Add other patient properties here as needed
@@ -19,7 +18,7 @@ type SearchParamProps = {
 const NewAppointment = ({ params: { userId } }: SearchParamProps) => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false); // Keep this if AppointmentForm needs it
+  const [open, setOpen] = useState(true); // Initialize as true if this is a modal
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -65,8 +64,8 @@ const NewAppointment = ({ params: { userId } }: SearchParamProps) => {
               type="create"
               userId={userId}
               patientId={patient.$id}
-              setOpen={setOpen} // Now properly provided
-              appointment={undefined} // Add if needed
+              setOpen={setOpen}
+              appointment={undefined}
             />
             <p className='copyright mt-10 py-12'>
               &copy; 2024 MediCare
