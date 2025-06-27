@@ -4,16 +4,32 @@ import { getPatient } from '@/lib/actions/patient.action';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 
+// Define proper types
+type Patient = {
+  $id: string;
+  // Add other patient properties here as needed
+};
+
+type SearchParamProps = {
+  params: {
+    userId: string;
+  };
+};
+
 const NewAppointment = ({ params: { userId } }: SearchParamProps) => {
-  const [patient, setPatient] = useState<any>(null);
+  const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // Keep this if AppointmentForm needs it
 
   useEffect(() => {
     const fetchPatient = async () => {
       try {
         const patientData = await getPatient(userId);
-        setPatient(patientData);
+        if (patientData && typeof patientData === 'object' && '$id' in patientData) {
+          setPatient(patientData as Patient);
+        } else {
+          throw new Error('Invalid patient data');
+        }
       } catch (error) {
         console.error('Error fetching patient:', error);
       } finally {
@@ -49,7 +65,8 @@ const NewAppointment = ({ params: { userId } }: SearchParamProps) => {
               type="create"
               userId={userId}
               patientId={patient.$id}
-              setOpen={setOpen}
+              setOpen={setOpen} // Now properly provided
+              appointment={undefined} // Add if needed
             />
             <p className='copyright mt-10 py-12'>
               &copy; 2024 MediCare
