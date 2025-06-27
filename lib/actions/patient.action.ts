@@ -10,9 +10,28 @@ type CreateUserParams = {
     name?: string;
 };
 
-type RegisterUserParams = {
+type PatientBaseData = {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    dateOfBirth: string;
+    gender: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+    phoneNumber?: string;
+    emergencyContactName?: string;
+    emergencyContactPhone?: string;
+    bloodType?: string;
+    allergies?: string;
+    medications?: string;
+    medicalConditions?: string;
+};
+
+type RegisterUserParams = PatientBaseData & {
     identificationDocument?: FormData;
-    [key: string]: any; // For other patient properties
 };
 
 export const createUser = async (user: CreateUserParams) => {
