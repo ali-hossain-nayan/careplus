@@ -1,13 +1,37 @@
-
 "use client";
-import AppointmentForm from '@/components/forms/AppointmentForm'
+import AppointmentForm from '@/components/forms/AppointmentForm';
 import { getPatient } from '@/lib/actions/patient.action';
-import Image from 'next/image'
-import React, { useState } from 'react'
+import Image from 'next/image';
+import React, { useState, useEffect } from 'react';
 
-const NewAppointment = async ({ params: { userId } }: SearchParamProps) => {
-  const patient = await getPatient(userId);
-   const [open, setOpen] = useState(false);
+const NewAppointment = ({ params: { userId } }: SearchParamProps) => {
+  const [patient, setPatient] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchPatient = async () => {
+      try {
+        const patientData = await getPatient(userId);
+        setPatient(patientData);
+      } catch (error) {
+        console.error('Error fetching patient:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatient();
+  }, [userId]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!patient) {
+    return <div>Patient not found</div>;
+  }
+
   return (
     <>
       <div className='flex h-screen max-h-screen'>
@@ -21,15 +45,15 @@ const NewAppointment = async ({ params: { userId } }: SearchParamProps) => {
               className="mb-12 h-10 w-fit"
             />
 
-            {/* <PatientForm /> */}
             <AppointmentForm
               type="create"
               userId={userId}
               patientId={patient.$id}
-               setOpen={setOpen}
+              setOpen={setOpen}
             />
             <p className='copyright mt-10 py-12'>
-              &copy; 2024 MediCare</p>
+              &copy; 2024 MediCare
+            </p>
           </div>
         </section>
         <Image
@@ -41,7 +65,7 @@ const NewAppointment = async ({ params: { userId } }: SearchParamProps) => {
         />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default NewAppointment
+export default NewAppointment;
