@@ -1,10 +1,11 @@
 import AppointmentForm from '@/components/forms/AppointmentForm'
 import { getPatient } from '@/lib/actions/patient.action';
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
 
 const NewAppointment = async ({ params: { userId } }: SearchParamProps) => {
   const patient = await getPatient(userId);
+   const [open, setOpen] = useState(false);
   return (
     <>
       <div className='flex h-screen max-h-screen'>
@@ -23,6 +24,7 @@ const NewAppointment = async ({ params: { userId } }: SearchParamProps) => {
               type="create"
               userId={userId}
               patientId={patient.$id}
+               setOpen={setOpen}
             />
             <p className='copyright mt-10 py-12'>
               &copy; 2024 MediCare</p>
