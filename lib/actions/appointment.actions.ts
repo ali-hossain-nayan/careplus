@@ -119,7 +119,7 @@ export const updateAppointment = async ({
     const updateData = {
       ...appointment,
       ...(appointment.schedule && { schedule: appointment.schedule.toISOString() }),
-      // Removed updatedBy because your collection does not support it
+      ...(type === 'statusChange' && userId ? { updatedBy: userId } : {})
     };
 
     const updatedAppointment = await databases.updateDocument(
