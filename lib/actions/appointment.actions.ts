@@ -1,5 +1,5 @@
 'use server'
-import { ID, Query, AppwriteException } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 import { APPOINTMENT_COLLECTION_ID, DATABASE_ID, databases } from "../appwrite.config";
 import { parseStringify } from "../utils";
 import { Appointment, Patient } from "@/types/appwrite.types";
@@ -25,8 +25,8 @@ type UpdateAppointmentParams = {
 };
 
 export const createAppointment = async (appointment: CreateAppointmentParams) => {
-  if (!DATABASE_ID) {
-    throw new Error('DATABASE_ID is not configured');
+  if (!DATABASE_ID || !APPOINTMENT_COLLECTION_ID) {
+    throw new Error('Appwrite configuration is incomplete');
   }
 
   try {
@@ -49,15 +49,15 @@ export const createAppointment = async (appointment: CreateAppointmentParams) =>
       }
     );
     return parseStringify(newAppointment);
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Failed to create appointment:", error);
     throw error;
   }
 };
 
 export const getAppointment = async (appointmentId: string) => {
-  if (!DATABASE_ID) {
-    throw new Error('DATABASE_ID is not configured');
+  if (!DATABASE_ID || !APPOINTMENT_COLLECTION_ID) {
+    throw new Error('Appwrite configuration is incomplete');
   }
 
   try {
@@ -67,15 +67,15 @@ export const getAppointment = async (appointmentId: string) => {
       appointmentId
     );
     return parseStringify(appointment as Appointment);
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Failed to get appointment:", error);
     throw error;
   }
 };
 
 export const getRecentAppointmentList = async () => {
-  if (!DATABASE_ID) {
-    throw new Error('DATABASE_ID is not configured');
+  if (!DATABASE_ID || !APPOINTMENT_COLLECTION_ID) {
+    throw new Error('Appwrite configuration is incomplete');
   }
 
   try {
@@ -98,7 +98,7 @@ export const getRecentAppointmentList = async () => {
       ...counts,
       documents: appointments.documents as Appointment[]
     });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Failed to get appointments:", error);
     throw error;
   }
@@ -110,8 +110,8 @@ export const updateAppointment = async ({
   userId,
   type
 }: UpdateAppointmentParams) => {
-  if (!DATABASE_ID) {
-    throw new Error('DATABASE_ID is not configured');
+  if (!DATABASE_ID || !APPOINTMENT_COLLECTION_ID) {
+    throw new Error('Appwrite configuration is incomplete');
   }
 
   try {
@@ -134,7 +134,7 @@ export const updateAppointment = async ({
 
     revalidatePath("/admin");
     return parseStringify(updatedAppointment as Appointment);
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Failed to update appointment:", error);
     throw error;
   }
