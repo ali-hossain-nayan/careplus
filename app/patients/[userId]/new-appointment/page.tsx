@@ -18,7 +18,6 @@ type SearchParamProps = {
 const NewAppointment = ({ params: { userId } }: SearchParamProps) => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(true); // Initialize as true if this is a modal
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -64,7 +63,6 @@ const NewAppointment = ({ params: { userId } }: SearchParamProps) => {
               type="create"
               userId={userId}
               patientId={patient.$id}
-              setOpen={setOpen}
               appointment={undefined}
             />
             <p className='copyright mt-10 py-12'>

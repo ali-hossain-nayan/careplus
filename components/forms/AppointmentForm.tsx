@@ -26,7 +26,7 @@ type Props = {
   patientId: string;
   type: "create" | "cancel" | "schedule";
   appointment?: Appointment;
-  setOpen: (open: boolean) => void;
+  setOpen?: (open: boolean) => void; // Make optional
 };
 
 const AppointmentForm = ({
