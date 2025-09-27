@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 type Status = 'pending' | 'scheduled' | 'cancelled';
 
 type CreateAppointmentParams = {
-  patient: Patient | string; // Can be either full patient object or just ID
+  patient: Patient | string;
   schedule: Date;
   status: Status;
   primaryPhysician: string;
@@ -24,6 +24,9 @@ type UpdateAppointmentParams = {
   type?: 'statusChange' | 'reschedule' | 'other';
 };
 
+// Allowed fields in Appwrite schema for appointments
+const ALLOWED_FIELDS = ["patient", "schedule", "status", "primaryPhysician", "reason", "note", "userId"];
+
 export const createAppointment = async (appointment: CreateAppointmentParams) => {
   if (!DATABASE_ID || !APPOINTMENT_COLLECTION_ID) {
     throw new Error('Appwrite configuration is incomplete');
@@ -34,20 +37,20 @@ export const createAppointment = async (appointment: CreateAppointmentParams) =>
       ? appointment.patient 
       : appointment.patient.$id;
 
-   const newAppointment = await databases.createDocument(
-  DATABASE_ID,
-  APPOINTMENT_COLLECTION_ID,
-  ID.unique(),
-  {
-    patient: patientId, // <-- Correct field name here
-    schedule: appointment.schedule.toISOString(),
-    status: appointment.status,
-    primaryPhysician: appointment.primaryPhysician,
-    reason: appointment.reason,
-    note: appointment.note,
-    userId: appointment.userId
-  }
-);
+    const newAppointment = await databases.createDocument(
+      DATABASE_ID,
+      APPOINTMENT_COLLECTION_ID,
+      ID.unique(),
+      {
+        patient: patientId,
+        schedule: appointment.schedule.toISOString(),
+        status: appointment.status,
+        primaryPhysician: appointment.primaryPhysician,
+        reason: appointment.reason,
+        note: appointment.note,
+        userId: appointment.userId
+      }
+    );
 
     return parseStringify(newAppointment);
   } catch (error) {
@@ -116,22 +119,28 @@ export const updateAppointment = async ({
   }
 
   try {
-    const updateData = {
+    // Convert schedule to ISO if present
+    const updatePayload: Record<string, any> = {
       ...appointment,
-      ...(appointment.schedule && { schedule: appointment.schedule.toISOString() }),
+      ...(appointment.schedule ? { schedule: appointment.schedule.toISOString() } : {}),
       ...(type === 'statusChange' && userId ? { updatedBy: userId } : {})
     };
+
+    // Filter only allowed fields to prevent "Unknown attribute" errors
+    const filteredData = Object.fromEntries(
+      Object.entries(updatePayload).filter(([key]) => ALLOWED_FIELDS.includes(key))
+    );
+
+    if (Object.keys(filteredData).length === 0) {
+      throw new Error("No valid fields to update for this appointment.");
+    }
 
     const updatedAppointment = await databases.updateDocument(
       DATABASE_ID,
       APPOINTMENT_COLLECTION_ID,
       appointmentId,
-      updateData
+      filteredData
     );
-
-    if (!updatedAppointment) {
-      throw new Error("Appointment not found!");
-    }
 
     revalidatePath("/admin");
     return parseStringify(updatedAppointment as Appointment);

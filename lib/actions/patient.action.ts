@@ -34,27 +34,52 @@ type RegisterUserParams = PatientBaseData & {
     identificationDocument?: FormData;
 };
 
+// "use server";
+
+// import { ID, Query } from "node-appwrite";
+// import { users } from "../appwrite.config";
+// import { parseStringify } from "../lib/utils";
+// import { CreateUserParams } from "../types";
+
 export const createUser = async (user: CreateUserParams) => {
-    try {
-        const newUser = await users.create(
-            ID.unique(),
-            user.email,
-            user.phone,
-            undefined,
-            user.name
-        );
-        return parseStringify(newUser);
-    } catch (error: unknown) {
-        if (error instanceof Error && 'code' in error && error.code === 409) {
-            const documents = await users.list([
-                Query.equal('email', [user.email])
-            ]);
-            return parseStringify(documents?.users[0]);
-        }
-        console.error("Error creating user:", error);
-        throw error;
+  try {
+    // Try to create new user
+    const newUser = await users.create(
+      ID.unique(),
+      user.email,
+      user.phone,
+      undefined, // password is optional here
+      user.name
+    );
+
+    console.log("✅ New user created:", newUser.$id);
+    return parseStringify(newUser);
+
+  } catch (error: any) {
+    // Handle duplicate user (409)
+    if (error.code === 409) {
+      console.warn("⚠️ User already exists, fetching existing...");
+
+      const documents = await users.list([
+        Query.equal("email", [user.email]),
+      ]);
+
+      const existingUser = documents?.users?.[0];
+
+      if (!existingUser) {
+        console.error("❌ User already exists but could not be retrieved");
+        throw new Error("User already exists but not retrievable");
+      }
+
+      console.log("✅ Existing user found:", existingUser.$id);
+      return parseStringify(existingUser);
     }
-}
+
+    console.error("❌ Error creating user:", error);
+    throw error;
+  }
+};
+
 
 export const getUser = async (userId: string) => {
     try {
